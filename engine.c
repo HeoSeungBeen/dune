@@ -47,7 +47,6 @@ int main(void) {
 	while (1) {
 		// loop 돌 때마다(즉, TICK==10ms마다) 키 입력 확인
 		KEY key = get_key();
-
 		// 키 입력이 있으면 처리
 		if (is_arrow_key(key)) {
 			cursor_move(ktod(key));
