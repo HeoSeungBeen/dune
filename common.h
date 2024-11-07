@@ -13,6 +13,8 @@
 #define N_LAYER 2
 #define MAP_WIDTH	60
 #define MAP_HEIGHT	18
+#define COMMAND_WIDTH 40
+#define SYS_HEIGHT 6
 
 
 /* ================= 위치와 방향 =================== */
@@ -33,6 +35,8 @@ typedef enum {
 	// k_none: 입력된 키가 없음. d_stay(안 움직이는 경우)에 대응
 	k_none = 0, k_up, k_right, k_left, k_down,
 	k_quit,
+	k_esc,
+	k_space,
 	k_undef, // 정의되지 않은 키 입력	
 } KEY;
 

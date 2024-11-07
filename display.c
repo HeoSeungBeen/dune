@@ -7,6 +7,7 @@
 
 #include "display.h"
 #include "io.h"
+#include "unit.h"
 
 // 출력할 내용들의 좌상단(topleft) 좌표
 const POSITION resource_pos = { 0, 0 };
@@ -20,18 +21,20 @@ void project(char src[N_LAYER][MAP_HEIGHT][MAP_WIDTH], char dest[MAP_HEIGHT][MAP
 void display_resource(RESOURCE resource);
 void display_map(char map[N_LAYER][MAP_HEIGHT][MAP_WIDTH]);
 void display_cursor(CURSOR cursor);
+void display_object_info(void); // 상태창 초기화 
+void display_structure_info(STRUCTURE structure);
+void display_unit_info(UNIT unit);
+//void display_construction(CURSOR cursor);
+//void display_unit(CURSOR cursor);
 
 
-void display(
-	RESOURCE resource,
-	char map[N_LAYER][MAP_HEIGHT][MAP_WIDTH], 
-	CURSOR cursor)
+void display(RESOURCE resource, char map[N_LAYER][MAP_HEIGHT][MAP_WIDTH], CURSOR cursor)
 {
 	display_resource(resource);
 	display_map(map);
 	display_cursor(cursor);
+	display_object_info(void);
 	// display_system_message()
-	// display_object_info()
 	// display_commands()
 	// ...
 }
@@ -82,4 +85,44 @@ void display_cursor(CURSOR cursor) {
 
 	ch = frontbuf[curr.row][curr.column];
 	printc(padd(map_pos, curr), ch, COLOR_CURSOR);
+}
+
+void display_object_info(void) {
+
+}
+
+void display_structure_info(STRUCTURE structure) {
+	if (structure.camp == 0) {
+		printf(" House Atreides \n");
+	}
+	else if(structure.camp == 1){
+		printf(" House Harkonnen \n");
+	}
+	else {
+		printf(" Neutrality \n");
+	}
+	printf("name : % s\n", structure.name);
+	printf("%s\n", structure.instruction);
+	printf("cost : %d\n", structure.construction_cost);
+	printf("durability : %d / %d\n", structure.durability, structure.max_durability);
+
+}
+
+void display_unit_info(UNIT unit) {
+	if (unit.camp == 0) {
+		printf(" House Atreides ");
+	}
+	else if (unit.camp == 1) {
+		printf(" House Harkonnen ");
+	}
+	else {
+		printf(" Neutrality \n");
+	}
+	printf("%s\n", unit.name);
+	printf("hp : %d / %d\n", unit.hp, unit.max_hp);
+	printf("cost : %d\n", unit.production_cost);
+	printf("population : %d\n", unit.population);
+	printf("damage / cycle : %d / %d\n", unit.damage, unit.attack_cycle);
+	printf("speed : %d\n", unit.moving_cycle);
+	printf("vision : %d\n", unit.vision);
 }

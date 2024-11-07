@@ -4,6 +4,7 @@
 #include "common.h"
 #include "io.h"
 #include "display.h"
+#include "unit.h"
 
 void init(void);
 void intro(void);
@@ -20,6 +21,15 @@ CURSOR cursor = { { 1, 1 }, {1, 1} };
 
 /* ================= game data =================== */
 char map[N_LAYER][MAP_HEIGHT][MAP_WIDTH] = { 0 };
+char command_map[N_LAYER][MAP_HEIGHT][COMMAND_WIDTH] = { 0 };
+char sys_message_map[N_LAYER][SYS_HEIGHT][MAP_WIDTH] = { 0 };
+char object_info_map[N_LAYER][SYS_HEIGHT][COMMAND_WIDTH] = { 0 };
+
+STRUCTURE player_str[30] = { 0 };
+STRUCTURE computer_str[30] = { 0 };
+
+UNIT player_unit[50] = { 0 };
+UNIT computer_unit[50] = { 0 };
 
 RESOURCE resource = { 
 	.spice = 0,
@@ -55,6 +65,8 @@ int main(void) {
 			// 방향키 외의 입력
 			switch (key) {
 			case k_quit: outro();
+			case k_space: // display_object_info_details()
+			case k_esc: // display_object_info()
 			case k_none:
 			case k_undef:
 			default: break;
