@@ -15,7 +15,7 @@
 #define MAP_HEIGHT	18
 #define COMMAND_WIDTH 40
 #define SYS_HEIGHT 6
-
+#define DOUBLE_CLICK_INTERVAL 500
 
 /* ================= 위치와 방향 =================== */
 // 맵에서 위치를 나타내는 구조체
@@ -73,9 +73,14 @@ inline POSITION dtop(DIRECTION d) {
 	static POSITION direction_vector[] = { {0, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 0} };
 	return direction_vector[d];
 }
+inline POSITION dtop_quad(DIRECTION d) {
+	static POSITION direction_vector[] = { {0, 0}, {-4, 0}, {0, 4}, {0, -4}, {4, 0} };
+	return direction_vector[d];
+}
 
 // p를 d 방향으로 이동시킨 POSITION
 #define pmove(p, d)		(padd((p), dtop(d)))
+#define pmove_quad(p, d)		(padd((p), dtop_quad(d)))
 
 /* ================= game data =================== */
 typedef struct {
@@ -95,5 +100,6 @@ typedef struct {
 	int next_move_time;	// 다음에 움직일 시간
 	int speed;
 } OBJECT_SAMPLE;
-
 #endif
+
+

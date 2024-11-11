@@ -10,7 +10,9 @@ void init(void);
 void intro(void);
 void outro(void);
 void cursor_move(DIRECTION dir);
+void cursor_move_quad(DIRECTION dir);
 void sample_obj_move(void);
+int is_double_click(int);
 POSITION sample_obj_next_position(void);
 
 
@@ -30,6 +32,8 @@ STRUCTURE computer_str[30] = { 0 };
 
 UNIT player_unit[50] = { 0 };
 UNIT computer_unit[50] = { 0 };
+
+KEY prev_key = k_none;
 
 RESOURCE resource = { 
 	.spice = 0,
@@ -59,26 +63,34 @@ int main(void) {
 		KEY key = get_key();
 		// 키 입력이 있으면 처리
 		if (is_arrow_key(key)) {
-			cursor_move(ktod(key));
+			if (is_double_click(key)) {
+				cursor_move_quad(key);
+			}
+			else {
+				cursor_move(key);
+			}
 		}
 		else {
 			// 방향키 외의 입력
 			switch (key) {
 			case k_quit: outro();
-			case k_space: // display_object_info_details()
-			case k_esc: // display_object_info()
+			case k_space: 
+				//오브젝트 선택
+				// display_object_info()
+			case k_esc:
+				// 상태창 클리어
 			case k_none:
 			case k_undef:
 			default: break;
 			}
 		}
-
+		prev_key = key;
 		// 샘플 오브젝트 동작
 		sample_obj_move();
 
 		// 화면 출력
 		display(resource, map, cursor);
-		Sleep(TICK);
+		Sleep(10);
 		sys_clock += 10;
 	}
 }
@@ -86,7 +98,7 @@ int main(void) {
 /* ================= subfunctions =================== */
 void intro(void) {
 	printf("DUNE 1.5\n");		
-	Sleep(2000);
+	Sleep(10);
 	system("cls");
 }
 
@@ -120,6 +132,23 @@ void init(void) {
 	// object sample
 	map[1][obj.pos.row][obj.pos.column] = 'o';
 }
+int is_double_click(int key) {
+	static int last_key = 0;
+	static clock_t last_time = 0;
+
+	clock_t current_time = clock();
+	int time_difference = (current_time - last_time) * 1000 / CLOCKS_PER_SEC;  // 밀리초로 변환
+
+	if (key == last_key && time_difference <= DOUBLE_CLICK_INTERVAL) {
+		last_key = 0;  // 더블 클릭 감지 후 초기화
+		return 1;       // 더블 클릭 감지됨
+	}
+	else {
+		last_key = key;      // 현재 키와 시간 저장
+		last_time = current_time;
+		return 0;            // 더블 클릭 아님
+	}
+}
 
 // (가능하다면) 지정한 방향으로 커서 이동
 void cursor_move(DIRECTION dir) {
@@ -127,13 +156,27 @@ void cursor_move(DIRECTION dir) {
 	POSITION new_pos = pmove(curr, dir);
 
 	// validation check
-	if (1 <= new_pos.row && new_pos.row <= MAP_HEIGHT - 2 && \
+	if (1 <= new_pos.row && new_pos.row <= MAP_HEIGHT - 2 && 
 		1 <= new_pos.column && new_pos.column <= MAP_WIDTH - 2) {
 
 		cursor.previous = cursor.current;
 		cursor.current = new_pos;
 	}
 }
+
+void cursor_move_quad(DIRECTION dir) {
+	POSITION curr = cursor.current;
+	POSITION new_pos = pmove_quad(curr, dir);
+
+	// validation check
+	if (1 <= new_pos.row && new_pos.row <= MAP_HEIGHT - 2 &&
+		1 <= new_pos.column && new_pos.column <= MAP_WIDTH - 2) {
+
+		cursor.previous = cursor.current;
+		cursor.current = new_pos;
+	}
+}
+
 
 /* ================= sample object movement =================== */
 POSITION sample_obj_next_position(void) {

@@ -21,7 +21,7 @@ void project(char src[N_LAYER][MAP_HEIGHT][MAP_WIDTH], char dest[MAP_HEIGHT][MAP
 void display_resource(RESOURCE resource);
 void display_map(char map[N_LAYER][MAP_HEIGHT][MAP_WIDTH]);
 void display_cursor(CURSOR cursor);
-void display_object_info(void); // 상태창 초기화 
+//void display_object_info(); // 상태창 초기화 
 void display_structure_info(STRUCTURE structure);
 void display_unit_info(UNIT unit);
 //void display_construction(CURSOR cursor);
@@ -33,7 +33,7 @@ void display(RESOURCE resource, char map[N_LAYER][MAP_HEIGHT][MAP_WIDTH], CURSOR
 	display_resource(resource);
 	display_map(map);
 	display_cursor(cursor);
-	display_object_info(void);
+	//display_object_info(void);
 	// display_system_message()
 	// display_commands()
 	// ...
@@ -87,9 +87,9 @@ void display_cursor(CURSOR cursor) {
 	printc(padd(map_pos, curr), ch, COLOR_CURSOR);
 }
 
-void display_object_info(void) {
-
-}
+//void display_object_info(void) {
+//
+//}
 
 void display_structure_info(STRUCTURE structure) {
 	if (structure.camp == 0) {
