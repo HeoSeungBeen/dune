@@ -6,9 +6,11 @@
 #include "display.h"
 #include "unit.h"
 
+
 void init(void);
 void intro(void);
 void outro(void);
+void init_object(void); // 최초 오브젝트 생성 함수
 void cursor_move(DIRECTION dir);
 void cursor_move_quad(DIRECTION dir);
 void sample_obj_move(void);
@@ -27,19 +29,27 @@ char command_map[N_LAYER][MAP_HEIGHT][COMMAND_WIDTH] = { 0 };
 char sys_message_map[N_LAYER][SYS_HEIGHT][MAP_WIDTH] = { 0 };
 char object_info_map[N_LAYER][SYS_HEIGHT][COMMAND_WIDTH] = { 0 };
 
-STRUCTURE player_str[30] = { 0 };
-STRUCTURE computer_str[30] = { 0 };
+structure player_str[30] = { 0 };
+structure computer_str[30] = { 0 };
+structure neutral_zone[30] = { 0 };
 
-UNIT player_unit[50] = { 0 };
-UNIT computer_unit[50] = { 0 };
+unit player_unit[50] = { 0 };
+unit computer_unit[50] = { 0 };
+
+
+int index_global_player_str = 0;
+int index_global_player_unit = 0;
+int index_global_computer_str = 0;
+int index_global_computer_unit = 0;
+int index_neutral_zone = 0;
 
 KEY prev_key = k_none;
 
 RESOURCE resource = { 
 	.spice = 0,
-	.spice_max = 0,
+	.spice_max = 5,
 	.population = 0,
-	.population_max = 0
+	.population_max = 10
 };
 
 OBJECT_SAMPLE obj = {
@@ -57,6 +67,7 @@ int main(void) {
 	init();
 	intro();
 	display(resource, map, cursor);
+	init_object();
 
 	while (1) {
 		// loop 돌 때마다(즉, TICK==10ms마다) 키 입력 확인
@@ -131,6 +142,25 @@ void init(void) {
 
 	// object sample
 	map[1][obj.pos.row][obj.pos.column] = 'o';
+}
+void init_object(void) {
+	player_str[index_global_player_str] = create_str_base();
+	player_unit[index_global_player_unit] = create_unit_harvester();
+	computer_str[index_global_computer_str] = create_str_base();
+	computer_unit[index_global_computer_unit] = create_unit_harvester();
+	neutral_zone[0] = create_str_plate();
+	neutral_zone[1] = create_str_plate();
+
+	
+	// 인덱스 변경
+	index_global_player_str = 1;
+	index_global_player_unit = 1;
+	index_global_computer_str = 1;
+	index_global_computer_unit = 1;
+	index_neutral_zone = 2;
+
+	resource.population += 5;
+
 }
 int is_double_click(int key) {
 	static int last_key = 0;

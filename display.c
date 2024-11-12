@@ -22,8 +22,8 @@ void display_resource(RESOURCE resource);
 void display_map(char map[N_LAYER][MAP_HEIGHT][MAP_WIDTH]);
 void display_cursor(CURSOR cursor);
 //void display_object_info(); // 상태창 초기화 
-void display_structure_info(STRUCTURE structure);
-void display_unit_info(UNIT unit);
+void display_structure_info(structure structure);
+void display_unit_info(unit unit);
 //void display_construction(CURSOR cursor);
 //void display_unit(CURSOR cursor);
 
@@ -91,7 +91,7 @@ void display_cursor(CURSOR cursor) {
 //
 //}
 
-void display_structure_info(STRUCTURE structure) {
+void display_structure_info(structure structure) {
 	if (structure.camp == 0) {
 		printf(" House Atreides \n");
 	}
@@ -108,7 +108,7 @@ void display_structure_info(STRUCTURE structure) {
 
 }
 
-void display_unit_info(UNIT unit) {
+void display_unit_info(unit unit) {
 	if (unit.camp == 0) {
 		printf(" House Atreides ");
 	}

@@ -17,6 +17,11 @@
 #define SYS_HEIGHT 6
 #define DOUBLE_CLICK_INTERVAL 500
 
+extern int index_global_player_str;
+extern int index_global_player_unit;
+extern int index_global_computer_str;
+extern int index_global_computer_unit;
+
 /* ================= 위치와 방향 =================== */
 // 맵에서 위치를 나타내는 구조체
 typedef struct {
