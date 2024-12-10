@@ -12,7 +12,9 @@
 // 출력할 내용들의 좌상단(topleft) 좌표
 const POSITION resource_pos = { 0, 0 };
 const POSITION map_pos = { 1, 0 };
-
+const POSITION status_pos = { 1, 60 };
+const POSITION sys_pos = { 19, 0 };
+const POSITION command_pos = { 19, 60 };
 
 char backbuf[MAP_HEIGHT][MAP_WIDTH] = { 0 };
 char frontbuf[MAP_HEIGHT][MAP_WIDTH] = { 0 };
@@ -21,11 +23,9 @@ void project(char src[N_LAYER][MAP_HEIGHT][MAP_WIDTH], char dest[MAP_HEIGHT][MAP
 void display_resource(RESOURCE resource);
 void display_map(char map[N_LAYER][MAP_HEIGHT][MAP_WIDTH]);
 void display_cursor(CURSOR cursor);
-//void display_object_info(); // 상태창 초기화 
+void display_status_info();
 void display_structure_info(structure structure);
 void display_unit_info(unit unit);
-//void display_construction(CURSOR cursor);
-//void display_unit(CURSOR cursor);
 
 
 void display(RESOURCE resource, char map[N_LAYER][MAP_HEIGHT][MAP_WIDTH], CURSOR cursor)
@@ -33,10 +33,8 @@ void display(RESOURCE resource, char map[N_LAYER][MAP_HEIGHT][MAP_WIDTH], CURSOR
 	display_resource(resource);
 	display_map(map);
 	display_cursor(cursor);
-	//display_object_info(void);
-	// display_system_message()
-	// display_commands()
-	// ...
+	display_status_info();
+
 }
 
 void display_resource(RESOURCE resource) {
@@ -63,15 +61,30 @@ void project(char src[N_LAYER][MAP_HEIGHT][MAP_WIDTH], char dest[MAP_HEIGHT][MAP
 
 void display_map(char map[N_LAYER][MAP_HEIGHT][MAP_WIDTH]) {
 	project(map, backbuf);
+	int color = 15;
 
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
 			if (frontbuf[i][j] != backbuf[i][j]) {
 				POSITION pos = {i, j };
-				printc(padd(map_pos, pos), backbuf[i][j], COLOR_DEFAULT);
+				if (backbuf[i][j] == 'B' || backbuf[i][j] == 'H') {
+					color = 0x17;
+				}
+				else if (backbuf[i][j] == 'W') {
+					color = 0x67;
+				}
+				else if (backbuf[i][j] == 'P') {
+					color = 0x87;
+				}
+				else if (backbuf[i][j] == 'S') {
+					color = 0xC7;
+				}
+				printc(padd(map_pos, pos), backbuf[i][j], color);
+
 			}
 			frontbuf[i][j] = backbuf[i][j];
 		}
+		color = 15;
 	}
 }
 
@@ -86,10 +99,17 @@ void display_cursor(CURSOR cursor) {
 	ch = frontbuf[curr.row][curr.column];
 	printc(padd(map_pos, curr), ch, COLOR_CURSOR);
 }
+void display_status_info(void) {
+	set_color(15);
+	gotoxy(status_pos);
+	printf("%s", "<status information>");
 
-//void display_object_info(void) {
-//
-//}
+	gotoxy(sys_pos);
+	printf("%s", "<system message>");
+
+	gotoxy(command_pos);
+	printf("%s", "<command line>");
+}
 
 void display_structure_info(structure structure) {
 	if (structure.camp == 0) {

@@ -11,7 +11,7 @@
 #define TICK 10		// time unit(ms)
 
 #define N_LAYER 2
-#define MAP_WIDTH	60
+#define MAP_WIDTH  60
 #define MAP_HEIGHT	18
 #define COMMAND_WIDTH 40
 #define SYS_HEIGHT 6
@@ -21,6 +21,7 @@ extern int index_global_player_str;
 extern int index_global_player_unit;
 extern int index_global_computer_str;
 extern int index_global_computer_unit;
+extern int index_neutral_zone;
 
 /* ================= 위치와 방향 =================== */
 // 맵에서 위치를 나타내는 구조체

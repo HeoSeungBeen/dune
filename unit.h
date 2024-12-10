@@ -1,6 +1,8 @@
 #ifndef UNIT_H
 #define UNIT_H
 
+#include "common.h"
+
 typedef struct {
 	int camp;
 	char name[10];
@@ -9,6 +11,8 @@ typedef struct {
 	int durability;
 	int max_durability;
 	int order;
+	POSITION pos;
+
 } structure;
 
 typedef struct {
@@ -23,22 +27,24 @@ typedef struct {
 	int max_hp;
 	int vision;
 	int order[2]; 
+	POSITION pos;
 } unit;
 
-structure create_str_base(void);
-structure create_str_plate(void);
-structure create_str_dormitory(void);
-structure create_str_garage(void);
-structure create_str_barracks(void);
-structure create_str_shelter(void);
-structure create_str_arena(void);
-structure create_str_factory(void);
+structure create_str_base(int, int);
+structure create_str_plate(int, int);
+structure create_str_dormitory(int, int);
+structure create_str_garage(int, int);
+structure create_str_barracks(int, int);
+structure create_str_shelter(int, int);
+structure create_str_arena(int, int);
+structure create_str_factory(int, int);
+structure create_str_spa(int, int);
 
-unit create_unit_harvester(void);
-unit create_unit_freman(void);
-unit create_unit_soldier(void);
-unit create_unit_fighter(void);
-unit create_unit_htank(void);
-unit create_unit_sandworm(void);
+unit create_unit_harvester(int, int);
+unit create_unit_freman(int, int);
+unit create_unit_soldier(int, int);
+unit create_unit_fighter(int, int);
+unit create_unit_htank(int, int);
+unit create_unit_sandworm(int, int);
 
 #endif // UNIT_H

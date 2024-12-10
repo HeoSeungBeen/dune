@@ -1,6 +1,7 @@
 ﻿#include <stdlib.h>
 #include <time.h>
 #include <assert.h>
+#include <Windows.h>
 #include "common.h"
 #include "io.h"
 #include "display.h"
@@ -14,9 +15,9 @@ void init_object(void); // 최초 오브젝트 생성 함수
 void cursor_move(DIRECTION dir);
 void cursor_move_quad(DIRECTION dir);
 void sample_obj_move(void);
+void dot_structure(structure);
 int is_double_click(int);
 POSITION sample_obj_next_position(void);
-
 
 /* ================= control =================== */
 int sys_clock = 0;		// system-wide clock(ms)
@@ -25,9 +26,6 @@ CURSOR cursor = { { 1, 1 }, {1, 1} };
 
 /* ================= game data =================== */
 char map[N_LAYER][MAP_HEIGHT][MAP_WIDTH] = { 0 };
-char command_map[N_LAYER][MAP_HEIGHT][COMMAND_WIDTH] = { 0 };
-char sys_message_map[N_LAYER][SYS_HEIGHT][MAP_WIDTH] = { 0 };
-char object_info_map[N_LAYER][SYS_HEIGHT][COMMAND_WIDTH] = { 0 };
 
 structure player_str[30] = { 0 };
 structure computer_str[30] = { 0 };
@@ -35,6 +33,7 @@ structure neutral_zone[30] = { 0 };
 
 unit player_unit[50] = { 0 };
 unit computer_unit[50] = { 0 };
+unit neutral_unit[50] = { 0 };
 
 
 int index_global_player_str = 0;
@@ -42,6 +41,7 @@ int index_global_player_unit = 0;
 int index_global_computer_str = 0;
 int index_global_computer_unit = 0;
 int index_neutral_zone = 0;
+int index_neutral_unit = 0;
 
 KEY prev_key = k_none;
 
@@ -101,6 +101,7 @@ int main(void) {
 
 		// 화면 출력
 		display(resource, map, cursor);
+
 		Sleep(10);
 		sys_clock += 10;
 	}
@@ -108,8 +109,9 @@ int main(void) {
 
 /* ================= subfunctions =================== */
 void intro(void) {
-	printf("DUNE 1.5\n");		
-	Sleep(10);
+	printf("DUNE 1.5\n");
+	printf("%c", '■');
+	Sleep(100);
 	system("cls");
 }
 
@@ -120,44 +122,95 @@ void outro(void) {
 
 void init(void) {
 	// layer 0(map[0])에 지형 생성
-	for (int j = 0; j < MAP_WIDTH; j++) {
-		map[0][0][j] = '#';
-		map[0][MAP_HEIGHT - 1][j] = '#';
-	}
-
-	for (int i = 1; i < MAP_HEIGHT - 1; i++) {
-		map[0][i][0] = '#';
-		map[0][i][MAP_WIDTH - 1] = '#';
-		for (int j = 1; j < MAP_WIDTH-1; j++) {
-			map[0][i][j] = ' ';
-		}
-	}
-
-	// layer 1(map[1])은 비워 두기(-1로 채움)
+	// 전체 맵 크기 설정 (가로 100, 세로 24)
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
-			map[1][i][j] = -1;
+			map[0][i][j] = ' ';  // 기본 값은 공백으로 설정
+			map[1][i][j] = -1;    // layer 1은 -1로 채우기
 		}
+	}
+
+	// 각 사분면의 테두리 만들기 (각각 '#')
+	// 1사분면
+	for (int i = 0; i < 18; i++) {
+		map[0][i][0] = '#';             // 왼쪽
+		map[0][i][59] = '#';            // 오른쪽
+	}
+	for (int j = 0; j < 60; j++) {
+		map[0][0][j] = '#';             // 위쪽
+		map[0][17][j] = '#';            // 아래쪽
 	}
 
 	// object sample
 	map[1][obj.pos.row][obj.pos.column] = 'o';
-}
-void init_object(void) {
-	player_str[index_global_player_str] = create_str_base();
-	player_unit[index_global_player_unit] = create_unit_harvester();
-	computer_str[index_global_computer_str] = create_str_base();
-	computer_unit[index_global_computer_unit] = create_unit_harvester();
-	neutral_zone[0] = create_str_plate();
-	neutral_zone[1] = create_str_plate();
 
+}
+void dot_structure(structure st) {
+	char S = NULL;
+	if (strcmp(st.name, "Base") == 0) {
+		S = 'B';
+	}
+	if (strcmp(st.name, "Plate") == 0) {
+		S = 'P';
+	}
+	if (strcmp(st.name, "spaice") == 0) {
+		S = 'S';
+		map[0][st.pos.row][st.pos.column] = S;
+		return;
+	}
+	map[0][st.pos.row][st.pos.column] = S;
+	map[0][st.pos.row][st.pos.column + 1] = S;
+	map[0][st.pos.row + 1][st.pos.column + 1] = S;
+	map[0][st.pos.row + 1][st.pos.column] = S;
+}
+void dot_unit(unit u) {
+	char S = NULL;
+	if (strcmp(u.name, "harvester") == 0) {
+		S = 'H';
+	}
+	if (strcmp(u.name, "sandworm") == 0) {
+		S = 'W';
+	}
+	map[1][u.pos.row][u.pos.column] = S;
+}
+
+void init_object(void) {
+	player_str[index_global_player_str] = create_str_base(15, 1);
+	dot_structure(player_str[index_global_player_str]);
+
+	player_unit[index_global_player_unit] = create_unit_harvester(13, 1);
+	dot_unit(player_unit[index_global_player_unit]);
+
+	computer_str[index_global_computer_str] = create_str_base(1, 57);
+	dot_structure(computer_str[index_global_computer_str]);
+
+	computer_unit[index_global_computer_unit] = create_unit_harvester(4, 58);
+	dot_unit(computer_unit[index_global_computer_unit]);
+
+
+
+	neutral_zone[0] = create_str_plate(15, 3);
+	dot_structure(neutral_zone[0]);
+	neutral_zone[1] = create_str_plate(1, 55);
+	dot_structure(neutral_zone[1]);
+	neutral_zone[2] = create_str_spa(11, 1);
+	dot_structure(neutral_zone[2]);
+	neutral_zone[3] = create_str_spa(6, 58);
+	dot_structure(neutral_zone[3]);
+
+
+	neutral_unit[0] = create_unit_sandworm(7, 8);
+	dot_unit(neutral_unit[0]);
+	neutral_unit[1] = create_unit_sandworm(3, 46);
+	dot_unit(neutral_unit[1]);
 	
 	// 인덱스 변경
 	index_global_player_str = 1;
 	index_global_player_unit = 1;
 	index_global_computer_str = 1;
 	index_global_computer_unit = 1;
-	index_neutral_zone = 2;
+	index_neutral_zone = 4;
+	index_neutral_unit = 2;
 
 	resource.population += 5;
 
@@ -264,4 +317,11 @@ void sample_obj_move(void) {
 	map[1][obj.pos.row][obj.pos.column] = obj.repr;
 
 	obj.next_move_time = sys_clock + obj.speed;
+}
+
+void sandworm_move(void) {
+	int num = rand() % 4;
+	neutral_unit[0] = create_unit_sandworm(7, 8);
+	dot_unit(neutral_unit[0]);
+	map[1][neutral_unit[0].pos.row][neutral_unit[0].pos.column];
 }
